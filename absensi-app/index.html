@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi Mahasiswa</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📋 Sistem Absensi Mahasiswa</h1>
+            <p>Pencatatan kehadiran mahasiswa secara terpusat</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Form Input Absensi -->
+            <section class="form-section">
+                <h2>Tambah Data Absensi</h2>
+                <form id="absensiForm" class="form-container">
+                    <div class="form-group">
+                        <label for="nama">Nama Mahasiswa:</label>
+                        <input type="text" id="nama" required placeholder="Masukkan nama lengkap">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nim">NIM:</label>
+                        <input type="text" id="nim" required placeholder="Masukkan nomor induk mahasiswa">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kelas">Kelas:</label>
+                        <select id="kelas" required>
+                            <option value="">-- Pilih Kelas --</option>
+                            <option value="A">Kelas A</option>
+                            <option value="B">Kelas B</option>
+                            <option value="C">Kelas C</option>
+                            <option value="D">Kelas D</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tanggal">Tanggal:</label>
+                        <input type="date" id="tanggal" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status Kehadiran:</label>
+                        <select id="status" required>
+                            <option value="">-- Pilih Status --</option>
+                            <option value="Hadir">✓ Hadir</option>
+                            <option value="Izin">⚠ Izin</option>
+                            <option value="Sakit">🏥 Sakit</option>
+                            <option value="Alpa">✗ Alpa</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keterangan">Keterangan:</label>
+                        <textarea id="keterangan" placeholder="Masukkan keterangan (opsional)"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Simpan Data</button>
+                </form>
+            </section>
+
+            <!-- Filter dan Pencarian -->
+            <section class="filter-section">
+                <h2>Filter Data Absensi</h2>
+                <div class="filter-container">
+                    <input type="text" id="searchInput" placeholder="Cari berdasarkan nama atau NIM..." class="search-box">
+                    <select id="filterKelas" class="filter-select">
+                        <option value="">Semua Kelas</option>
+                        <option value="A">Kelas A</option>
+                        <option value="B">Kelas B</option>
+                        <option value="C">Kelas C</option>
+                        <option value="D">Kelas D</option>
+                    </select>
+                    <select id="filterStatus" class="filter-select">
+                        <option value="">Semua Status</option>
+                        <option value="Hadir">Hadir</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Alpa">Alpa</option>
+                    </select>
+                    <button id="btnReset" class="btn-reset">Reset Filter</button>
+                    <button id="btnExport" class="btn-export">📥 Export to CSV</button>
+                </div>
+            </section>
+
+            <!-- Tabel Data Absensi -->
+            <section class="table-section">
+                <h2>Data Absensi Mahasiswa</h2>
+                <div class="table-wrapper">
+                    <table id="absensiTable" class="absensi-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Mahasiswa</th>
+                                <th>NIM</th>
+                                <th>Kelas</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Keterangan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr class="empty-row">
+                                <td colspan="8" class="text-center">Belum ada data absensi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Statistik -->
+            <section class="stats-section">
+                <h2>Statistik Kehadiran</h2>
+                <div class="stats-grid">
+                    <div class="stat-card hadir">
+                        <h3>Hadir</h3>
+                        <p class="stat-number" id="statHadir">0</p>
+                    </div>
+                    <div class="stat-card izin">
+                        <h3>Izin</h3>
+                        <p class="stat-number" id="statIzin">0</p>
+                    </div>
+                    <div class="stat-card sakit">
+                        <h3>Sakit</h3>
+                        <p class="stat-number" id="statSakit">0</p>
+                    </div>
+                    <div class="stat-card alpa">
+                        <h3>Alpa</h3>
+                        <p class="stat-number" id="statAlpa">0</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2026 Sistem Absensi Mahasiswa. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

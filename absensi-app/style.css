@@ -1,0 +1,481 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --dark-color: #1f2937;
+    --light-color: #f3f4f6;
+    --border-color: #e5e7eb;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--dark-color);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+/* Header */
+.header {
+    background: linear-gradient(135deg, var(--primary-color), #1e40af);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Main Content */
+.main-content {
+    padding: 40px 20px;
+}
+
+/* Form Section */
+.form-section {
+    margin-bottom: 40px;
+    padding: 30px;
+    background: var(--light-color);
+    border-radius: 10px;
+    border-left: 5px solid var(--primary-color);
+}
+
+.form-section h2 {
+    margin-bottom: 25px;
+    color: var(--dark-color);
+    font-size: 1.5rem;
+}
+
+.form-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark-color);
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+    grid-column: 1 / -1;
+}
+
+.btn-submit {
+    grid-column: 1 / -1;
+    padding: 14px 30px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: #1d4ed8;
+}
+
+.btn-submit:active {
+    transform: scale(0.98);
+}
+
+/* Filter Section */
+.filter-section {
+    margin-bottom: 40px;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+}
+
+.filter-section h2 {
+    margin-bottom: 20px;
+    color: var(--dark-color);
+    font-size: 1.5rem;
+}
+
+.filter-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-box,
+.filter-select {
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+    font-family: inherit;
+    min-width: 200px;
+}
+
+.search-box:focus,
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.btn-reset,
+.btn-export {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-reset {
+    background: var(--light-color);
+    color: var(--dark-color);
+    border: 2px solid var(--border-color);
+}
+
+.btn-reset:hover {
+    background: var(--border-color);
+}
+
+.btn-export {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-export:hover {
+    background: #059669;
+}
+
+/* Table Section */
+.table-section {
+    margin-bottom: 40px;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+}
+
+.table-section h2 {
+    margin-bottom: 20px;
+    color: var(--dark-color);
+    font-size: 1.5rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 6px;
+    border: 2px solid var(--border-color);
+}
+
+.absensi-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.absensi-table thead {
+    background: var(--primary-color);
+    color: white;
+}
+
+.absensi-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.absensi-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.absensi-table tbody tr:hover {
+    background: var(--light-color);
+}
+
+.empty-row {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    min-width: 70px;
+}
+
+.status-hadir {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-izin {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-sakit {
+    background: #fed7aa;
+    color: #92400e;
+}
+
+.status-alpa {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Action Buttons */
+.btn-edit,
+.btn-delete {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 5px;
+}
+
+.btn-edit {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #1d4ed8;
+}
+
+.btn-delete {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+}
+
+/* Stats Section */
+.stats-section {
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    margin-bottom: 40px;
+}
+
+.stats-section h2 {
+    margin-bottom: 25px;
+    color: var(--dark-color);
+    font-size: 1.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    padding: 25px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.stat-card.hadir {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.stat-card.izin {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.stat-card.sakit {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.stat-card.alpa {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* Footer */
+.footer {
+    background: var(--dark-color);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.8rem;
+    }
+
+    .main-content {
+        padding: 20px 15px;
+    }
+
+    .form-section,
+    .filter-section,
+    .table-section,
+    .stats-section {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-container {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box,
+    .filter-select,
+    .btn-reset,
+    .btn-export {
+        min-width: 100%;
+    }
+
+    .absensi-table {
+        font-size: 0.9rem;
+    }
+
+    .absensi-table th,
+    .absensi-table td {
+        padding: 8px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .header {
+        padding: 20px 10px;
+    }
+
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .header p {
+        font-size: 0.9rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-container {
+        gap: 10px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+        margin-bottom: 3px;
+    }
+}
