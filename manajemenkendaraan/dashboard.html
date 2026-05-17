@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring - Lalu Lintas Truk</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+    <div class="container dashboard-page">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="header-left">
+                <a href="index.html" class="back-btn">◀</a>
+                <h1>Dashboard Monitoring</h1>
+            </div>
+            <div class="header-right">
+                <div class="connection-status online">
+                    <span class="status-indicator">●</span>
+                    <span class="status-text">Live</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-section">
+            <div class="kpi-card">
+                <div class="kpi-icon">📦</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Total Truk</div>
+                    <div class="kpi-value" id="totalTrucks">0</div>
+                    <small id="totalTrendUp" class="trend trend-up"></small>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">⏰</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Hari Ini</div>
+                    <div class="kpi-value" id="todayTrucks">0</div>
+                    <small id="todayTrendUp" class="trend trend-up"></small>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">⚖️</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Rata² Berat</div>
+                    <div class="kpi-value" id="avgWeight">0</div>
+                    <small>ton</small>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">🚨</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">Peak Time</div>
+                    <div class="kpi-value" id="peakTime">-</div>
+                    <small>WIB</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <label>Tanggal:</label>
+                <input type="date" id="filterDate" class="filter-input">
+            </div>
+
+            <div class="filter-group">
+                <label>Jenis Truk:</label>
+                <select id="filterTruckType" class="filter-input">
+                    <option value="">Semua</option>
+                    <option value="box">Box Truck</option>
+                    <option value="dump">Dump Truck</option>
+                    <option value="tanker">Tanker</option>
+                    <option value="trailer">Trailer</option>
+                    <option value="pickup">Pickup</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Berat:</label>
+                <select id="filterWeight" class="filter-input">
+                    <option value="">Semua</option>
+                    <option value="5-10">5-10 ton</option>
+                    <option value="10-20">10-20 ton</option>
+                    <option value="20-30">20-30 ton</option>
+                    <option value="30+">30+ ton</option>
+                </select>
+            </div>
+
+            <button id="resetFilterBtn" class="btn-secondary">🔄 Reset</button>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="table-section">
+            <div class="section-header">
+                <h2>📋 Data Survei (Real-Time)</h2>
+                <div class="auto-refresh">
+                    <input type="checkbox" id="autoRefreshToggle" checked>
+                    <label for="autoRefreshToggle">Auto-refresh</label>
+                    <span id="lastUpdateTime" class="update-time">Baru saja</span>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Waktu</th>
+                            <th>Plat Nomor</th>
+                            <th>Jenis Truk</th>
+                            <th>Rute</th>
+                            <th>Berat</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr class="empty-state">
+                            <td colspan="7">Belum ada data. Mulai buat entry dari Formulir Input</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <span id="pageInfo">Halaman 1 of 1</span>
+                <div class="pagination-buttons">
+                    <button id="prevPageBtn" class="pagination-btn" disabled>◀ Prev</button>
+                    <div id="pageNumbersContainer" class="page-numbers"></div>
+                    <button id="nextPageBtn" class="pagination-btn" disabled>Next ▶</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <h2>📊 Top 10 Rute Tersibuk</h2>
+                <canvas id="routeChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h2>⚖️ Distribusi Berat Muatan</h2>
+                <canvas id="weightChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <h2>📥 Export Data</h2>
+            <div class="export-buttons">
+                <button id="exportExcelBtn" class="btn-primary">
+                    📊 Export ke Excel
+                </button>
+                <button id="exportPdfBtn" class="btn-secondary">
+                    📄 Export ke PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Footer -->
+        <div class="statistics-footer">
+            <p>Total data tersimpan: <strong id="totalDataStored">0</strong> entri</p>
+            <p>Last sync: <span id="lastSyncTime">Belum sync</span></p>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Memuat data...</p>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

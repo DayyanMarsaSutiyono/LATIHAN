@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Input - Survei Truk Berat</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container form-page">
+        <!-- Header -->
+        <div class="form-header">
+            <a href="index.html" class="back-btn">◀</a>
+            <h1>Formulir Survei Truk Berat</h1>
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-indicator online">●</span>
+                <span class="status-text">Online</span>
+            </div>
+        </div>
+
+        <!-- Location Info -->
+        <div class="location-card">
+            <div class="location-icon">📍</div>
+            <div class="location-info">
+                <h3>Lokasi Survei</h3>
+                <p id="locationDisplay">Mengambil lokasi...</p>
+                <small id="coordinatesDisplay">GPS sedang aktif</small>
+            </div>
+            <button class="location-refresh" id="refreshLocationBtn" title="Refresh lokasi">🔄</button>
+        </div>
+
+        <!-- Form Content -->
+        <form id="surveyForm" class="survey-form">
+            <!-- Section 1: Identitas Truk -->
+            <div class="form-section">
+                <h2 class="section-title">Identitas Truk</h2>
+                
+                <div class="form-group">
+                    <label for="truckType">Jenis Truk <span class="required">*</span></label>
+                    <select id="truckType" name="truckType" required>
+                        <option value="">-- Pilih Jenis Truk --</option>
+                        <option value="box">Box Truck (Bak Tertutup)</option>
+                        <option value="dump">Dump Truck (Truk Pengangkut)</option>
+                        <option value="tanker">Tanker Truck (Mobil Tangki)</option>
+                        <option value="trailer">Trailer (Gandeng)</option>
+                        <option value="pickup">Pickup Truck</option>
+                        <option value="other">Lainnya</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="plateNumber">Nomor Pelat <span class="required">*</span></label>
+                    <input type="text" id="plateNumber" name="plateNumber" 
+                           placeholder="Contoh: B 1234 CD" 
+                           pattern="[A-Z0-9\s]{6,12}" 
+                           maxlength="12"
+                           required>
+                    <small id="plateError" class="error-message"></small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="weightCategory">Berat Muatan <span class="required">*</span></label>
+                        <select id="weightCategory" name="weightCategory" required>
+                            <option value="">-- Pilih Berat --</option>
+                            <option value="5-10">5 - 10 ton</option>
+                            <option value="10-20">10 - 20 ton</option>
+                            <option value="20-30">20 - 30 ton</option>
+                            <option value="30+">30+ ton</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="truckCondition">Kondisi Truk <span class="required">*</span></label>
+                        <select id="truckCondition" name="truckCondition" required>
+                            <option value="">-- Pilih Kondisi --</option>
+                            <option value="good">Baik</option>
+                            <option value="fair">Sedang</option>
+                            <option value="poor">Rusak</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Rute Perjalanan -->
+            <div class="form-section">
+                <h2 class="section-title">Rute Perjalanan</h2>
+                
+                <div class="form-group">
+                    <label for="origin">Asal Perjalanan <span class="required">*</span></label>
+                    <select id="origin" name="origin" required>
+                        <option value="">-- Pilih Lokasi Asal --</option>
+                        <option value="pusat">Pusat Kota</option>
+                        <option value="pelabuhan">Pelabuhan</option>
+                        <option value="industri">Area Industri</option>
+                        <option value="airport">Bandara</option>
+                        <option value="mall">Mall / Pusat Perbelanjaan</option>
+                        <option value="luar">Luar Kota</option>
+                        <option value="other">Lainnya</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="destination">Tujuan Perjalanan <span class="required">*</span></label>
+                    <select id="destination" name="destination" required>
+                        <option value="">-- Pilih Lokasi Tujuan --</option>
+                        <option value="pusat">Pusat Kota</option>
+                        <option value="pelabuhan">Pelabuhan</option>
+                        <option value="industri">Area Industri</option>
+                        <option value="airport">Bandara</option>
+                        <option value="mall">Mall / Pusat Perbelanjaan</option>
+                        <option value="luar">Luar Kota</option>
+                        <option value="other">Lainnya</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="departureTime">Waktu Keberangkatan <span class="required">*</span></label>
+                    <input type="time" id="departureTime" name="departureTime" required>
+                </div>
+            </div>
+
+            <!-- Section 3: Dokumentasi -->
+            <div class="form-section">
+                <h2 class="section-title">Dokumentasi (Opsional)</h2>
+                
+                <div class="photo-upload-area">
+                    <div class="photo-buttons">
+                        <button type="button" class="btn-secondary" id="cameraBtn">
+                            <span class="icon">📷</span> Ambil Foto
+                        </button>
+                        <button type="button" class="btn-secondary" id="galleryBtn">
+                            <span class="icon">📋</span> Pilih dari Galeri
+                        </button>
+                    </div>
+                    
+                    <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+                    
+                    <div id="photoPreview" class="photo-preview-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Catatan Tambahan</label>
+                    <textarea id="notes" name="notes" 
+                              placeholder="Contoh: Kerusakan jalan, kemacetan, kondisi khusus, dll..." 
+                              maxlength="250" rows="3"></textarea>
+                    <small id="notesCounter">0/250</small>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn-primary btn-large">
+                    ✓ Simpan Data
+                </button>
+                <button type="reset" class="btn-secondary btn-large">
+                    ⟲ Bersihkan Form
+                </button>
+            </div>
+        </form>
+
+        <!-- Hidden Camera Input -->
+        <input type="file" id="hiddenFileInput" accept="image/*" style="display: none;">
+
+        <!-- Success Modal -->
+        <div id="successModal" class="modal">
+            <div class="modal-content success-modal">
+                <div class="modal-icon">✓</div>
+                <h2>Data Berhasil Disimpan!</h2>
+                <p id="successMessage">Data truk telah tersimpan lokal</p>
+                <button type="button" class="btn-primary" id="continueBtn">Buat Entry Baru</button>
+                <a href="index.html" class="btn-secondary">Kembali ke Menu</a>
+            </div>
+        </div>
+
+        <!-- Data Counter Badge -->
+        <div class="data-counter">
+            📊 <span id="dataCount">0</span> data tersimpan
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/form.js"></script>
+</body>
+</html>
