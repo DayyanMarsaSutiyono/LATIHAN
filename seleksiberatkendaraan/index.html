@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penyeleksi Berat Kendaraan Truk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Penyeleksi Berat Kendaraan Truk</h1>
+    <p>Masukkan berat kendaraan dan muatan untuk mengetahui apakah total berat berada dalam batas aman.</p>
+
+    <div class="mobile-access">
+      Akses dari HP: <a id="mobileLink" href="#">jalankan server lokal dan buka di HP</a>
+    </div>
+
+    <form id="truck-form">
+      <label>
+        Plat Nomor Kendaraan
+        <input id="licensePlate" type="text" placeholder="Contoh: B 1234 CD" required>
+      </label>
+
+      <label>
+        Jenis Kendaraan
+        <select id="vehicleType" required>
+          <option value="car">Mobil roda 4 (max 5000 kg)</option>
+          <option value="truck6">Truk roda 6 (max 10000 kg)</option>
+          <option value="truckMore">Truk lebih dari 6 roda (max 14000 kg)</option>
+        </select>
+      </label>
+
+      <label>
+        Berat Kosong Kendaraan (kg)
+        <input id="emptyWeight" type="number" min="0" step="100" placeholder="Contoh: 8000" required>
+      </label>
+
+      <label>
+        Berat Muatan (kg)
+        <input id="cargoWeight" type="number" min="0" step="100" placeholder="Contoh: 5000" required>
+      </label>
+
+      <button type="submit">Hitung</button>
+    </form>
+
+    <section class="result" id="result" hidden>
+      <h2>Hasil Penilaian</h2>
+      <p id="message"></p>
+      <ul>
+        <li>Plat nomor: <span id="displayPlate"></span></li>
+        <li>Jenis kendaraan: <span id="displayType"></span></li>
+        <li>Berat kosong: <span id="displayEmpty"></span> kg</li>
+        <li>Berat muatan: <span id="displayCargo"></span> kg</li>
+        <li>Total berat: <span id="displayTotal"></span> kg</li>
+        <li>Batas aman: <span id="displayLimit"></span> kg</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
