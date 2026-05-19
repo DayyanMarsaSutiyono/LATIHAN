@@ -1,0 +1,8 @@
+[
+  {"q": "Apa itu machine learning?", "a": "Machine learning adalah cabang kecerdasan buatan yang memungkinkan sistem belajar dari data tanpa diprogram secara eksplisit."},
+  {"q": "Bagaimana cara kerja TF-IDF?", "a": "TF-IDF memberi bobot pada kata berdasarkan frekuensi terbalik dalam dokumen, menekankan kata yang informatif."},
+  {"q": "Apa perbedaan supervised dan unsupervised learning?", "a": "Supervised learning menggunakan data berlabel, sedangkan unsupervised learning menemukan pola tanpa label."},
+  {"q": "Bagaimana cara melatih model sederhana?", "a": "Kumpulkan data, bersihkan data, pilih fitur, pilih algoritma, lalu evaluasi dan tuning model."},
+  {"q": "Apa itu cosine similarity?", "a": "Cosine similarity mengukur kesamaan dua vektor dengan menghitung cos dari sudutnya; sering digunakan pada teks vektor."},
+  {"q": "Bagaimana jika model tidak menemukan jawaban?", "a": "Anda bisa menambah data pelatihan atau menurunkan ambang kesamaan untuk fleksibilitas."}
+]

@@ -1,0 +1,12 @@
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:#f3f4f6;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+.app{width:360px;text-align:center}
+h1{margin:0 0 8px;font-size:20px}
+.controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.controls button{padding:8px 12px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer}
+#moves{font-weight:600}
+.puzzle{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:320px;margin:0 auto}
+.tile{background:#ffffff;border-radius:8px;padding:24px 0;font-size:24px;box-shadow:0 2px 6px rgba(0,0,0,0.12);cursor:pointer;user-select:none}
+.tile.empty{background:transparent;box-shadow:none;cursor:default}
+.message{min-height:24px;margin-top:8px;color:green;font-weight:600}
+.hint{display:block;margin-top:6px;color:#555}
