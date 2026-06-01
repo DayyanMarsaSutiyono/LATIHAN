@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pencatatan Perawatan Mobil</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page-container">
+    <section class="hero-card">
+      <div>
+        <p class="eyebrow">Aplikasi Perawatan</p>
+        <h1>Pencatatan Perawatan Rutin Mobil</h1>
+        <p>Catat histori servis dan perawatan kendaraan dengan mudah. Simpan informasi dengan plat nomor, jenis kendaraan, dan kilometer saat ini.</p>
+        <p>Akses dari perangkat lain di jaringan lokal saat server dijalankan.</p>
+      </div>
+      <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80" alt="Mobil dalam bengkel" />
+    </section>
+
+    <section class="form-card">
+      <h2>Tambah Data Perawatan</h2>
+      <form id="maintenance-form">
+        <div class="field-group">
+          <label for="plate">Plat Nomor</label>
+          <input type="text" id="plate" name="plate" placeholder="B 1234 XYZ" required />
+        </div>
+
+        <div class="field-group">
+          <label for="type">Jenis Kendaraan</label>
+          <input type="text" id="type" name="type" placeholder="SUV, Sedan, MPV" required />
+        </div>
+
+        <div class="field-group">
+          <label for="kilometers">Kilometer Kendaraan</label>
+          <input type="number" id="kilometers" name="kilometers" placeholder="120000" min="0" required />
+        </div>
+
+        <div class="field-group">
+          <label for="date">Tanggal Perawatan</label>
+          <input type="date" id="date" name="date" required />
+        </div>
+
+        <div class="field-group full-width">
+          <label for="notes">Rincian Perawatan</label>
+          <textarea id="notes" name="notes" rows="3" placeholder="Ganti oli, cek rem dan ban..." required></textarea>
+        </div>
+
+        <button type="submit" class="primary-btn">Simpan Data</button>
+      </form>
+    </section>
+
+    <section class="table-card">
+      <div class="table-header">
+        <h2>Riwayat Perawatan</h2>
+        <button id="clear-storage" class="ghost-btn">Hapus Semua</button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Plat Nomor</th>
+              <th>Jenis Kendaraan</th>
+              <th>Kilometer</th>
+              <th>Tanggal</th>
+              <th>Rincian</th>
+            </tr>
+          </thead>
+          <tbody id="records-body">
+            <tr><td colspan="6" class="empty-state">Belum ada data perawatan. Tambahkan data menggunakan formulir di atas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

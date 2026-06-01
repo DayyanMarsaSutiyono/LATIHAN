@@ -7,8 +7,8 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Open index.html",
-            "file": "c:\\Users\\Lenovo\\README\\Latihan\\LATIHAN\\simple-ml-qa\\web\\index.html"
+            "name": "Open perawatan-mobil",
+            "file": "c:\\Users\\ASUS\\Git_VScode\\LATIHAN\\perawatan-mobil\\index.html"
         }
     ]
 }
