@@ -22,10 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
         filterDate: document.getElementById('filterDate'),
         filterTruckType: document.getElementById('filterTruckType'),
         filterWeight: document.getElementById('filterWeight'),
+        searchPlate: document.getElementById('searchPlate'),
+        vehicleDetails: document.getElementById('vehicleDetails'),
+        classificationSummary: document.getElementById('classificationSummary'),
+        dashboardMap: document.getElementById('dashboardMap'),
         resetFilterBtn: document.getElementById('resetFilterBtn'),
         exportExcelBtn: document.getElementById('exportExcelBtn'),
         exportPdfBtn: document.getElementById('exportPdfBtn'),
         loadingIndicator: document.getElementById('loadingIndicator'),
+        dashboardMapInstance: null,
+        dashboardMarkers: [],
 
         // Chart instances
         routeChart: null,
@@ -41,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         init() {
             this.setDefaultDate();
             this.setupEventListeners();
+            this.initMap();
             this.loadDashboard();
             this.startAutoRefresh();
         },
@@ -53,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.filterDate.addEventListener('change', () => this.applyFilters());
             this.filterTruckType.addEventListener('change', () => this.applyFilters());
             this.filterWeight.addEventListener('change', () => this.applyFilters());
+            this.searchPlate.addEventListener('input', () => this.applyFilters());
 
             // Auto-refresh toggle
             this.autoRefreshToggle.addEventListener('change', () => {
@@ -139,19 +147,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const filters = {
                 date: this.filterDate.value,
                 truckType: this.filterTruckType.value,
-                weightCategory: this.filterWeight.value
+                weightCategory: this.filterWeight.value,
+                plateNumber: this.searchPlate.value.trim()
             };
 
             this.filteredData = app.getFilteredSurveys(filters);
             this.currentPage = 1;
             this.renderTable();
             this.updateCharts();
+            this.updateClassificationSummary();
         },
 
         resetFilters() {
             this.setDefaultDate();
             this.filterTruckType.value = '';
             this.filterWeight.value = '';
+            this.searchPlate.value = '';
             this.applyFilters();
         },
 
@@ -173,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             this.tableBody.innerHTML = pageData.map((survey, idx) => `
-                <tr>
+                <tr data-id="${survey.id}">
                     <td>${startIdx + idx + 1}</td>
                     <td>${app.formatTime(survey.timestamp)}</td>
                     <td><strong>${survey.plateNumber}</strong></td>
@@ -190,6 +201,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     </td>
                 </tr>
             `).join('');
+
+            this.tableBody.querySelectorAll('tr[data-id]').forEach(row => {
+                row.addEventListener('click', () => {
+                    const surveyId = Number(row.dataset.id);
+                    const selected = this.filteredData.find(item => item.id === surveyId);
+                    if (selected) {
+                        this.renderVehicleDetails(selected);
+                    }
+                });
+            });
 
             this.updatePagination();
             this.updateLastUpdateTime();
@@ -253,6 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCharts() {
             this.updateRouteChart();
             this.updateWeightChart();
+            this.updateClassificationSummary();
+            this.updateMapMarkers();
         },
 
         updateRouteChart() {
@@ -348,11 +371,86 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
 
-        // ===== STATISTICS =====
+        // ===== CLASSIFICATION SUMMARY =====
 
-        updateStatistics() {
-            this.totalDataStored.textContent = app.getTotalCount();
+        updateClassificationSummary() {
+            const distribution = app.getWeightDistribution();
+            const labels = ['5-10', '10-20', '20-30', '30+'];
+            const labelMap = labels.map(label => ({
+                label: app.getWeightLabel(label),
+                count: distribution[label],
+                classification: app.classifyVehicle(label, 'box').label
+            }));
+
+            if (!this.classificationSummary) return;
+            this.classificationSummary.innerHTML = labelMap.map(item => `
+                <div class="summary-item">
+                    <div class="summary-label">${item.label}</div>
+                    <div class="summary-value">${item.count}</div>
+                    <div class="summary-tag">${item.classification}</div>
+                </div>
+            `).join('');
         },
+
+        // ===== MAP =====
+
+        initMap() {
+            try {
+                this.dashboardMapInstance = L.map('dashboardMap', {
+                    center: [-6.2088, 106.8456],
+                    zoom: 11,
+                    zoomControl: true,
+                    attributionControl: false
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(this.dashboardMapInstance);
+
+                this.updateMapMarkers();
+            } catch (error) {
+                console.warn('Leaflet tidak tersedia:', error);
+            }
+        },
+
+        updateMapMarkers() {
+            if (!this.dashboardMapInstance) return;
+
+            this.dashboardMarkers.forEach(marker => {
+                this.dashboardMapInstance.removeLayer(marker);
+            });
+            this.dashboardMarkers = [];
+
+            const allSurveys = app.getFilteredSurveys({});
+            allSurveys.forEach(survey => {
+                if (survey.gps && survey.gps.lat && survey.gps.lng) {
+                    const marker = L.marker([survey.gps.lat, survey.gps.lng])
+                        .addTo(this.dashboardMapInstance)
+                        .bindPopup(`Plat: ${survey.plateNumber}<br>${app.getTruckTypeLabel(survey.truckType)}<br>${app.getWeightLabel(survey.weightCategory)}`);
+
+                    this.dashboardMarkers.push(marker);
+                }
+            });
+
+            if (this.dashboardMarkers.length > 0) {
+                const group = L.featureGroup(this.dashboardMarkers);
+                this.dashboardMapInstance.fitBounds(group.getBounds().pad(0.2));
+            }
+        },
+
+        renderVehicleDetails(survey) {
+            if (!this.vehicleDetails) return;
+            const classification = app.classifyVehicle(survey.weightCategory, survey.truckType);
+            this.vehicleDetails.innerHTML = `
+                <p><strong>Plat Nomor:</strong> ${survey.plateNumber}</p>
+                <p><strong>Jenis Truk:</strong> ${app.getTruckTypeLabel(survey.truckType)}</p>
+                <p><strong>Berat:</strong> ${app.getWeightLabel(survey.weightCategory)}</p>
+                <p><strong>Rute:</strong> ${app.getLocationLabel(survey.origin)} → ${app.getLocationLabel(survey.destination)}</p>
+                <p><strong>Status:</strong> ${survey.synced ? '✓ Synced' : '⟳ Pending'}</p>
+                <p><strong>Klasifikasi:</strong> ${classification.label}</p>
+            `;
+        },
+
 
         updateLastUpdateTime() {
             this.lastUpdateTime.textContent = 'Baru saja';

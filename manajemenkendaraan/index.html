@@ -3,39 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Manajemen Lalu Lintas - Truk Berat</title>
+    <title>Login - Aplikasi Klasifikasi Berat Kendaraan</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <div class="container">
-        <div class="welcome-screen">
-            <div class="welcome-content">
-                <div class="logo">🚛</div>
-                <h1>Sistem Manajemen Lalu Lintas</h1>
-                <p class="subtitle">Survei & Monitoring Truk Bermuatan Berat</p>
-                
-                <div class="role-selector">
-                    <p class="role-title">Pilih Role Anda:</p>
-                    
-                    <a href="form.html" class="role-btn field-officer">
-                        <div class="role-icon">📍</div>
-                        <div class="role-name">Petugas Lapangan</div>
-                        <div class="role-desc">Input data truk di lokasi survei</div>
-                    </a>
-                    
-                    <a href="dashboard.html" class="role-btn monitoring-officer">
-                        <div class="role-icon">📊</div>
-                        <div class="role-name">Petugas Pusat</div>
-                        <div class="role-desc">Monitor & analisis data real-time</div>
-                    </a>
+<body data-page="login">
+    <div class="container login-page">
+        <div class="login-card">
+            <div class="logo">🚛</div>
+            <h1>Login Aplikasi Klasifikasi Berat Kendaraan</h1>
+            <p class="subtitle">Masuk sebagai Sopir atau User untuk mengakses fitur form, dashboard, map, dan identifikasi kendaraan.</p>
+
+            <div class="role-switcher">
+                <button type="button" class="role-btn active" data-role="sopir">Sopir</button>
+                <button type="button" class="role-btn" data-role="user">User</button>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <input type="hidden" id="userRole" name="role" value="sopir">
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input id="username" name="username" type="text" placeholder="Masukkan username" required>
                 </div>
 
-                <footer class="welcome-footer">
-                    <p>© 2026 Traffic Management System</p>
-                    <p class="version">v1.0 Beta</p>
-                </footer>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" placeholder="Masukkan password" required>
+                </div>
+
+                <button type="submit" class="btn-primary btn-large">Masuk</button>
+            </form>
+
+            <div class="auth-help">
+                <p>Login demo: <strong>sopir / sopir123</strong> atau <strong>user / user123</strong></p>
             </div>
+
+            <div id="authMessage" class="auth-message"></div>
         </div>
     </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>

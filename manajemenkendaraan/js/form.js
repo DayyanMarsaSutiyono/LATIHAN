@@ -18,18 +18,23 @@ document.addEventListener('DOMContentLoaded', () => {
         cameraBtn: document.getElementById('cameraBtn'),
         galleryBtn: document.getElementById('galleryBtn'),
         photoPreview: document.getElementById('photoPreview'),
+        classificationResult: document.getElementById('classificationResult'),
         successModal: document.getElementById('successModal'),
         continueBtn: document.getElementById('continueBtn'),
         dataCountBadge: document.getElementById('dataCount'),
         departureTimeInput: document.getElementById('departureTime'),
+        formMap: null,
+        formMarker: null,
 
         photos: [],
         currentLocation: null,
 
         init() {
             this.setupEventListeners();
+            this.initMap();
             this.loadLocation();
             this.setDefaultTime();
+            this.updateClassification();
             this.updateDataCount();
             this.enableDemoMode();
         },
@@ -48,6 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.plateNumberInput.addEventListener('change', () => {
                 this.plateNumberInput.value = app.formatPlateNumber(this.plateNumberInput.value);
             });
+
+            // Classification updates
+            document.getElementById('truckType').addEventListener('change', () => this.updateClassification());
+            document.getElementById('weightCategory').addEventListener('change', () => this.updateClassification());
 
             // Notes counter
             this.notesInput.addEventListener('input', () => this.updateNotesCounter());
@@ -96,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.coordinatesDisplay.textContent = 
                         `GPS: ${location.lat.toFixed(4)}°, ${location.lng.toFixed(4)}° (Akurasi: ±${Math.round(location.accuracy)}m)`;
                     this.refreshLocationBtn.classList.remove('loading');
+                    this.updateMapLocation(location);
                 })
                 .catch(error => {
                     this.locationDisplay.textContent = 'Gagal mendapatkan lokasi';
@@ -147,6 +157,61 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 this.notesCounter.classList.remove('text-muted');
             }
+        },
+
+        // ===== MAP =====
+
+        initMap() {
+            try {
+                this.formMap = L.map('formMap', {
+                    center: [-6.2088, 106.8456],
+                    zoom: 11,
+                    zoomControl: true,
+                    attributionControl: false
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(this.formMap);
+            } catch (error) {
+                console.warn('Leaflet tidak tersedia:', error);
+            }
+        },
+
+        updateMapLocation(location) {
+            if (!this.formMap || !location) return;
+
+            const markerIcon = L.icon({
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41]
+            });
+
+            if (this.formMarker) {
+                this.formMap.removeLayer(this.formMarker);
+            }
+
+            this.formMarker = L.marker([location.lat, location.lng], { icon: markerIcon })
+                .addTo(this.formMap)
+                .bindPopup(`Lokasi survei: ${this.locationDisplay.textContent}`)
+                .openPopup();
+
+            this.formMap.setView([location.lat, location.lng], 15);
+        },
+
+        // ===== CLASSIFICATION =====
+
+        updateClassification() {
+            const truckType = document.getElementById('truckType').value;
+            const weightCategory = document.getElementById('weightCategory').value;
+            const classification = app.classifyVehicle(weightCategory, truckType);
+
+            if (!truckType || !weightCategory) {
+                this.classificationResult.textContent = 'Pilih jenis kendaraan dan kategori berat untuk melihat klasifikasi.';
+                return;
+            }
+
+            this.classificationResult.textContent = `${classification.description}. Kelas: ${classification.label}.`;
         },
 
         // ===== PHOTO HANDLING =====
@@ -289,6 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.updateNotesCounter();
             this.plateError.textContent = '';
             this.updateDataCount();
+            this.updateClassification();
             this.loadLocation();
         },
 

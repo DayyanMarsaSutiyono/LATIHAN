@@ -70,6 +70,11 @@ class TrafficApp {
             surveys = surveys.filter(s => s.weightCategory === filters.weightCategory);
         }
 
+        if (filters.plateNumber) {
+            const query = filters.plateNumber.toLowerCase();
+            surveys = surveys.filter(s => s.plateNumber.toLowerCase().includes(query));
+        }
+
         // Sort by timestamp descending (newest first)
         surveys.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
@@ -177,6 +182,44 @@ class TrafficApp {
             Math.sin(dLng / 2) * Math.sin(dLng / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+    // ===== AUTHENTICATION =====
+
+    getSessionUser() {
+        const sessionData = localStorage.getItem('traffic_user_session');
+        return sessionData ? JSON.parse(sessionData) : null;
+    }
+
+    setSessionUser(user) {
+        localStorage.setItem('traffic_user_session', JSON.stringify(user));
+    }
+
+    clearSession() {
+        localStorage.removeItem('traffic_user_session');
+    }
+
+    isAuthenticated() {
+        return !!this.getSessionUser();
+    }
+
+    hasRole(role) {
+        const user = this.getSessionUser();
+        return user ? user.role === role : false;
+    }
+
+    classifyVehicle(weightCategory, truckType) {
+        const weightLabels = {
+            '5-10': 'Ringan',
+            '10-20': 'Sedang',
+            '20-30': 'Berat',
+            '30+': 'Sangat Berat'
+        };
+
+        return {
+            label: weightLabels[weightCategory] || 'Tidak Diketahui',
+            description: `Jenis: ${this.getTruckTypeLabel(truckType)}, Kategori Berat: ${weightLabels[weightCategory] || 'Tidak Diketahui'}`
+        };
     }
 
     // ===== CONNECTION DETECTION =====

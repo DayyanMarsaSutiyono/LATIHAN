@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Monitoring - Lalu Lintas Truk</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 </head>
-<body>
+<body data-page="dashboard">
     <div class="container dashboard-page">
         <!-- Header -->
         <div class="dashboard-header">
@@ -20,6 +21,7 @@
                     <span class="status-indicator">●</span>
                     <span class="status-text">Live</span>
                 </div>
+                <div id="userMenu" class="user-menu"></div>
             </div>
         </div>
 
@@ -82,6 +84,11 @@
             </div>
 
             <div class="filter-group">
+                <label>Cari Plat Nomor:</label>
+                <input id="searchPlate" class="filter-input" type="text" placeholder="Masukkan plat nomor" />
+            </div>
+
+            <div class="filter-group">
                 <label>Berat:</label>
                 <select id="filterWeight" class="filter-input">
                     <option value="">Semua</option>
@@ -93,6 +100,22 @@
             </div>
 
             <button id="resetFilterBtn" class="btn-secondary">🔄 Reset</button>
+        </div>
+
+        <!-- Identifikasi Kendaraan -->
+        <div class="identification-panel">
+            <div class="info-card vehicle-identification-card" id="vehicleIdentification">
+                <h2>Identifikasi Kendaraan</h2>
+                <p>Cari dan klik baris data untuk melihat detail kendaraan.</p>
+                <div class="vehicle-details" id="vehicleDetails">
+                    <p><strong>Plat Nomor:</strong> -</p>
+                    <p><strong>Jenis Truk:</strong> -</p>
+                    <p><strong>Berat:</strong> -</p>
+                    <p><strong>Rute:</strong> -</p>
+                    <p><strong>Status:</strong> -</p>
+                    <p><strong>Klasifikasi:</strong> -</p>
+                </div>
+            </div>
         </div>
 
         <!-- Data Table Section -->
@@ -151,6 +174,18 @@
             </div>
         </div>
 
+        <div class="charts-section">
+            <div class="chart-container">
+                <h2>📊 Klasifikasi Berat Kendaraan</h2>
+                <div id="classificationSummary" class="classification-summary"></div>
+            </div>
+        </div>
+
+        <div class="map-card">
+            <h2>📍 Peta Lokasi Kendaraan</h2>
+            <div id="dashboardMap" class="map-view">Memuat peta...</div>
+        </div>
+
         <!-- Export Section -->
         <div class="export-section">
             <h2>📥 Export Data</h2>
@@ -178,6 +213,8 @@
     </div>
 
     <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/dashboard.js"></script>
