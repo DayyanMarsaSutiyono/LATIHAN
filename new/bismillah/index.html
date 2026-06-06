@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Keselamatan Overload Truk</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚛 Sistem Keselamatan Overload Truk</h1>
+            <p>Routing realistis untuk truk, deteksi overload, dan rekomendasi jalur aman.</p>
+        </header>
+
+        <div class="main-content">
+            <section class="form-section">
+                <h2>📍 Lokasi & Tujuan</h2>
+                <div class="info-box">
+                    <p><strong>Lokasi saat ini:</strong> <span id="currentLocationText">Menunggu izin GPS...</span></p>
+                    <p><strong>Akurasi GPS:</strong> <span id="locationAccuracyText">-</span></p>
+                    <p><strong>Status GPS:</strong> <span id="geoStatusText">Memuat lokasi...</span></p>
+                </div>
+
+                <form id="truckForm">
+                    <div class="form-group">
+                        <label for="destinationInput">Pilih Tujuan:</label>
+                        <div class="destination-group">
+                            <input type="text" id="destinationInput" name="destinationInput" placeholder="Cari kota atau klik di map" autocomplete="off">
+                            <button type="button" id="chooseOnMapBtn" class="btn-secondary">Pilih di Map</button>
+                        </div>
+                        <ul id="destinationSuggestions" class="autocomplete-list"></ul>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="platNomor">Plat Nomor:</label>
+                        <input type="text" id="platNomor" name="platNomor" placeholder="Contoh: AB 1234 CD" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jenisKendaraan">Jenis Kendaraan:</label>
+                        <select id="jenisKendaraan" name="jenisKendaraan" required>
+                            <option value="">Pilih jenis kendaraan</option>
+                            <option value="mobil">Mobil / SUV / MPV</option>
+                            <option value="bus">Bus / Minibus</option>
+                            <option value="truk-kecil">Truk Kecil</option>
+                            <option value="truk-sedang">Truk Sedang</option>
+                            <option value="truk-besar">Truk Besar</option>
+                            <option value="trailer">Trailer</option>
+                        </select>
+                        <div id="weightThresholdInfo" class="threshold-info">Pilih jenis kendaraan untuk melihat batas berat aman dan batas overload.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="beratKendaraan">Berat Kendaraan (Ton):</label>
+                        <input type="number" id="beratKendaraan" name="beratKendaraan" step="0.1" placeholder="Contoh: 8.5" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Periksa & Routing</button>
+                </form>
+
+                <div id="alertContainer"></div>
+            </section>
+
+            <section class="map-section" id="mapSection">
+                <h2>🗺️ Peta & Routing Realistis</h2>
+                <div id="map"></div>
+                <div class="map-status">
+                    <p id="mapHint">Pilih tujuan melalui pencarian atau klik tombol "Pilih di Map".</p>
+                </div>
+                <div id="routeSummary" class="route-summary hidden"></div>
+                <div id="routeInstructions" class="instructions-card hidden">
+                    <div class="instructions-header">
+                        <h3>Petunjuk Arah</h3>
+                        <button type="button" id="toggleInstructionsBtn" class="btn-secondary">Sembunyikan</button>
+                    </div>
+                    <div id="instructionsList"></div>
+                </div>
+            </section>
+        </div>
+
+        <section class="dashboard-section">
+            <h2>📊 Daftar Kendaraan</h2>
+            <div class="dashboard-controls">
+                <button id="btnClearAll" class="btn-clear">Bersihkan Semua</button>
+            </div>
+            <div id="dashboardContainer" class="dashboard-container">
+                <p class="empty-message">Belum ada data kendaraan. Silakan input data di atas.</p>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

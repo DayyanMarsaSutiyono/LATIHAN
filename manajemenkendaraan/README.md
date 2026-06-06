@@ -370,4 +370,17 @@ Aplikasi ini adalah demo/educational project. Bebas untuk dimodifikasi dan dikem
 
 ---
 
+## 🖥️ Menjalankan Backend (opsional)
+
+Untuk menggunakan fitur upload/OCR dan rekomendasi rute, jalankan backend Flask kecil yang disertakan:
+
+1. Buka terminal di `manajemenkendaraan/backend`
+2. Buat virtualenv & install dependency: `pip install -r requirements.txt`
+3. Jalankan: `python app.py`
+4. Frontend akan memanggil API di `http://localhost:5000/api` untuk deteksi pelat dan rekomendasi rute.
+
+Catatan: OCR membutuhkan Tesseract terinstall pada sistem jika ingin deteksi teks bekerja.
+
+---
+
 **Pertanyaan? Buka file HTML di browser dan mulai explore! 🚀**

@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Chart instances
         routeChart: null,
         weightChart: null,
+        routePolyline: null,
 
         // State
         currentPage: 1,
@@ -208,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const selected = this.filteredData.find(item => item.id === surveyId);
                     if (selected) {
                         this.renderVehicleDetails(selected);
+                        this.updateSelectedRoute(selected);
                     }
                 });
             });
@@ -438,6 +440,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
+        updateSelectedRoute(survey) {
+            if (!this.dashboardMapInstance || !survey) return;
+
+            if (this.routePolyline) {
+                this.dashboardMapInstance.removeLayer(this.routePolyline);
+                this.routePolyline = null;
+            }
+
+            const routePoints = app.parseRoutePoints(survey.routePath || '', survey.origin, survey.destination);
+            if (routePoints.length > 1) {
+                this.routePolyline = L.polyline(routePoints, {
+                    color: '#DD0000',
+                    weight: 4,
+                    opacity: 0.8,
+                    dashArray: '8 8',
+                    lineJoin: 'round'
+                }).addTo(this.dashboardMapInstance);
+
+                this.dashboardMapInstance.fitBounds(this.routePolyline.getBounds().pad(0.2));
+            }
+        },
+
         renderVehicleDetails(survey) {
             if (!this.vehicleDetails) return;
             const classification = app.classifyVehicle(survey.weightCategory, survey.truckType);
@@ -446,6 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>Jenis Truk:</strong> ${app.getTruckTypeLabel(survey.truckType)}</p>
                 <p><strong>Berat:</strong> ${app.getWeightLabel(survey.weightCategory)}</p>
                 <p><strong>Rute:</strong> ${app.getLocationLabel(survey.origin)} → ${app.getLocationLabel(survey.destination)}</p>
+                <p><strong>Rute Dilalui:</strong> ${survey.routePath ? survey.routePath : 'Tidak ada data rute tambahan'}</p>
                 <p><strong>Status:</strong> ${survey.synced ? '✓ Synced' : '⟳ Pending'}</p>
                 <p><strong>Klasifikasi:</strong> ${classification.label}</p>
             `;
@@ -499,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Kondisi': s.truckCondition,
                 'Asal': app.getLocationLabel(s.origin),
                 'Tujuan': app.getLocationLabel(s.destination),
+                'Rute Dilalui': s.routePath || '-',
                 'Catatan': s.notes,
                 'Status': s.synced ? 'Synced' : 'Pending'
             }));
@@ -564,6 +590,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             <td style="padding: 8px;">${app.getPeakHour()}</td>
                         </tr>
                     </table>
+
+                    <h2>Rute Tambahan</h2>
+                    <p>${surveys.filter(s => s.routePath).length} entri memiliki rute tambahan</p>
 
                     <h2>Top Routes</h2>
                     <table style="width: 100%; border-collapse: collapse;">

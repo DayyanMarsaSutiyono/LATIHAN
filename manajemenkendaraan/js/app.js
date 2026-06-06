@@ -468,6 +468,65 @@ class TrafficApp {
     }
 
     /**
+     * Get coordinates for a known location key
+     */
+    getLocationCoordinates(key) {
+        const coords = {
+            'pusat': [-6.2088, 106.8456],
+            'pelabuhan': [-6.1256, 106.9613],
+            'industri': [-6.2450, 106.9000],
+            'airport': [-6.1256, 106.6590],
+            'mall': [-6.2146, 106.8451],
+            'luar': [-6.5000, 106.8000],
+            'other': [-6.2088, 106.8456]
+        };
+
+        return coords[key] || null;
+    }
+
+    /**
+     * Parse route points from input text and fallback to origin/destination
+     */
+    parseRoutePoints(routeText, origin, destination) {
+        const points = [];
+
+        const originCoords = this.getLocationCoordinates(origin);
+        const destinationCoords = this.getLocationCoordinates(destination);
+
+        if (originCoords) {
+            points.push(originCoords);
+        }
+
+        if (routeText) {
+            const stops = routeText.split(',').map(item => item.trim()).filter(Boolean);
+            stops.forEach(stop => {
+                const normalized = stop.toLowerCase();
+                if (normalized.includes('pusat')) {
+                    points.push(this.getLocationCoordinates('pusat'));
+                } else if (normalized.includes('pelabuhan')) {
+                    points.push(this.getLocationCoordinates('pelabuhan'));
+                } else if (normalized.includes('industri')) {
+                    points.push(this.getLocationCoordinates('industri'));
+                } else if (normalized.includes('bandara') || normalized.includes('airport')) {
+                    points.push(this.getLocationCoordinates('airport'));
+                } else if (normalized.includes('mall')) {
+                    points.push(this.getLocationCoordinates('mall'));
+                } else if (normalized.includes('luar') || normalized.includes('kota')) {
+                    points.push(this.getLocationCoordinates('luar'));
+                } else {
+                    points.push(this.getLocationCoordinates('other'));
+                }
+            });
+        }
+
+        if (destinationCoords) {
+            points.push(destinationCoords);
+        }
+
+        return points.filter(Boolean);
+    }
+
+    /**
      * Validate plate number format
      */
     validatePlateNumber(plate) {

@@ -5,12 +5,14 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const FormManager = {
+        apiBase: 'http://localhost:5000/api',
         form: document.getElementById('surveyForm'),
         locationDisplay: document.getElementById('locationDisplay'),
         coordinatesDisplay: document.getElementById('coordinatesDisplay'),
         refreshLocationBtn: document.getElementById('refreshLocationBtn'),
         plateNumberInput: document.getElementById('plateNumber'),
         plateError: document.getElementById('plateError'),
+        routePathInput: document.getElementById('routePath'),
         notesInput: document.getElementById('notes'),
         notesCounter: document.getElementById('notesCounter'),
         photoInput: document.getElementById('photoInput'),
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         departureTimeInput: document.getElementById('departureTime'),
         formMap: null,
         formMarker: null,
+        routePolyline: null,
 
         photos: [],
         currentLocation: null,
@@ -57,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Classification updates
             document.getElementById('truckType').addEventListener('change', () => this.updateClassification());
             document.getElementById('weightCategory').addEventListener('change', () => this.updateClassification());
+            document.getElementById('origin').addEventListener('change', () => this.updateRouteOnMap());
+            document.getElementById('destination').addEventListener('change', () => this.updateRouteOnMap());
+            this.routePathInput.addEventListener('input', () => this.updateRouteOnMap());
 
             // Notes counter
             this.notesInput.addEventListener('input', () => this.updateNotesCounter());
@@ -197,10 +203,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 .openPopup();
 
             this.formMap.setView([location.lat, location.lng], 15);
+            this.updateRouteOnMap();
+        },
+
+        updateRouteOnMap() {
+            if (!this.formMap) return;
+
+            const routeText = this.routePathInput.value.trim();
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+            const routePoints = app.parseRoutePoints(routeText, origin, destination);
+
+            if (this.routePolyline) {
+                this.formMap.removeLayer(this.routePolyline);
+                this.routePolyline = null;
+            }
+
+            if (routePoints.length > 1) {
+                this.routePolyline = L.polyline(routePoints, {
+                    color: '#0066CC',
+                    weight: 4,
+                    opacity: 0.8,
+                    lineJoin: 'round'
+                }).addTo(this.formMap);
+
+                this.formMap.fitBounds(this.routePolyline.getBounds().pad(0.2));
+            }
+        },
+
+        requestRecommendedRoute(formData) {
+            if (!this.formMap) return Promise.resolve();
+
+            const payload = {
+                origin: formData.origin,
+                destination: formData.destination,
+                weightCategory: formData.weightCategory,
+                truckType: formData.truckType
+            };
+
+            return fetch(this.apiBase + '/recommend-route', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data || !data.ok) return;
+                this.showRecommendedRoutes(data.routes, data.recommended);
+            })
+            .catch(err => {
+                console.warn('Rekomendasi rute gagal:', err);
+            });
+        },
+
+        showRecommendedRoutes(routes, recommendedIdx = 0) {
+            // remove existing recommendation layers if any
+            if (this.recommendationLayers) {
+                this.recommendationLayers.forEach(l => this.formMap.removeLayer(l));
+            }
+            this.recommendationLayers = [];
+
+            routes.forEach((route, idx) => {
+                const latlngs = route.coords.map(p => [p.lat, p.lng]);
+                const color = idx === recommendedIdx ? '#ff3300' : '#666666';
+                const weight = idx === recommendedIdx ? 5 : 3;
+
+                const poly = L.polyline(latlngs, { color, weight, opacity: 0.9 }).addTo(this.formMap);
+                poly.bindPopup(`<strong>${route.name}</strong><br>Score: ${route.score}<br>${route.advice}`);
+                this.recommendationLayers.push(poly);
+            });
+
+            if (this.recommendationLayers.length > 0) {
+                const group = L.featureGroup(this.recommendationLayers);
+                this.formMap.fitBounds(group.getBounds().pad(0.2));
+            }
         },
 
         // ===== CLASSIFICATION =====
-
         updateClassification() {
             const truckType = document.getElementById('truckType').value;
             const weightCategory = document.getElementById('weightCategory').value;
@@ -275,12 +354,48 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.preventDefault();
                     this.photos = this.photos.filter(p => p.id !== photo.id);
                     this.renderPhotoPreview();
+                    // Try OCR detection via backend to auto-fill plate number
+                    this.detectPlateFromDataUrl(photoData.data).catch(() => {});
                 });
 
                 photoDiv.appendChild(img);
                 photoDiv.appendChild(removeBtn);
                 this.photoPreview.appendChild(photoDiv);
             });
+        },
+
+        detectPlateFromDataUrl(dataUrl) {
+            // Convert base64 dataURL to Blob
+            try {
+                const parts = dataUrl.split(',');
+                const meta = parts[0];
+                const bstr = atob(parts[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                const blob = new Blob([u8arr], { type: meta.match(/:(.*?);/)[1] || 'image/png' });
+
+                const fd = new FormData();
+                fd.append('file', blob, 'photo.png');
+
+                return fetch(this.apiBase + '/detect', { method: 'POST', body: fd })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res && res.ok && res.text) {
+                            const text = res.text.replace(/[^A-Z0-9\s]/gi, ' ').trim();
+                            if (text && text.length > 3 && app && app.formatPlateNumber) {
+                                // Auto-fill only if plate input is empty
+                                if (!this.plateNumberInput.value || this.plateNumberInput.value.trim() === '') {
+                                    this.plateNumberInput.value = app.formatPlateNumber(text.split('\n')[0]);
+                                }
+                            }
+                        }
+                    });
+            } catch (err) {
+                return Promise.reject(err);
+            }
         },
 
         // ===== FORM SUBMISSION =====
@@ -304,6 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 truckCondition: document.getElementById('truckCondition').value,
                 origin: document.getElementById('origin').value,
                 destination: document.getElementById('destination').value,
+                routePath: this.routePathInput.value.trim(),
                 departureTime: this.departureTimeInput.value,
                 notes: this.notesInput.value,
                 photos: this.photos.map(p => ({
@@ -319,6 +435,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Update data count
                 this.updateDataCount();
+
+                // Request recommended route from backend and show on map
+                this.requestRecommendedRoute(formData).catch(() => {});
 
                 // Show success modal
                 this.showSuccessModal();
@@ -349,12 +468,14 @@ document.addEventListener('DOMContentLoaded', () => {
             this.form.reset();
             this.photos = [];
             this.photoPreview.innerHTML = '';
+            this.routePathInput.value = '';
             this.successModal.classList.remove('active');
             this.setDefaultTime();
             this.updateNotesCounter();
             this.plateError.textContent = '';
             this.updateDataCount();
             this.updateClassification();
+            this.updateRouteOnMap();
             this.loadLocation();
         },
 
